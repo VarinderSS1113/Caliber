@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caliber — Photos or video in. A printable 3D model out.</title>
+<meta name="description" content="Caliber turns photos or a video of a real object into a clean, watertight, correctly-scaled 3D model you can print or edit. Free, open-source, and local-first.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14181D; --ink2:#1E232B; --paper:#FFFFFF; --surface:#F7F8FA; --surface2:#FFFFFF;
+  --bd:#E6E9ED; --tx:#15191F; --t2:#5A6672; --t3:#8C95A0; --sig:#2D6BE3; --sigdk:#1E4FAF; --sigbg:#EAF1FC;
+  --ok:#2F8F5B; --mono:'JetBrains Mono',ui-monospace,monospace; --disp:'Space Grotesk',sans-serif; --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);color:var(--tx);background:var(--paper);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:.5px solid var(--bd)}
+.nav{display:flex;align-items:center;gap:14px;padding:14px 24px;max-width:1060px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:9px}
+.logo .wm{font-family:var(--disp);font-weight:600;letter-spacing:.13em;font-size:17px;color:var(--ink)}
+.nav .links{margin-left:auto;display:flex;gap:26px;align-items:center;font-size:14.5px;color:var(--t2)}
+.nav .links a:hover{color:var(--tx)}
+.ghbtn{display:inline-flex;align-items:center;gap:7px;border:.5px solid var(--bd);border-radius:9px;padding:8px 13px;font-size:14px;color:var(--tx)}
+.ghbtn:hover{border-color:var(--sig);color:var(--sig)}
+@media(max-width:680px){.nav .links a:not(.ghbtn){display:none}}
+
+/* hero */
+.hero{text-align:center;padding:84px 0 36px;position:relative;overflow:hidden}
+.herobg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.hero>.wrap{position:relative;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--sigbg);color:var(--sigdk);font-size:12.5px;font-weight:500;padding:6px 13px;border-radius:20px;margin-bottom:26px;font-family:var(--mono)}
+.hero h1{font-family:var(--disp);font-weight:600;font-size:clamp(34px,6vw,58px);line-height:1.08;margin:0 0 18px;letter-spacing:-.01em}
+.hero h1 .accent{color:var(--sig)}
+.hero p.lead{font-size:clamp(16px,2.4vw,20px);color:var(--t2);max-width:600px;margin:0 auto 34px}
+.dlrow{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.dl{display:inline-flex;align-items:center;gap:11px;background:var(--ink);color:#fff;border-radius:12px;padding:14px 22px;font-size:15px;font-weight:500;transition:transform .08s,background .15s}
+.dl:hover{background:#000;transform:translateY(-1px)}
+.dl svg{flex:0 0 auto}
+.dl small{display:block;font-size:11px;opacity:.6;font-weight:400;letter-spacing:.02em}
+.dl.ghost{background:transparent;color:var(--tx);border:.5px solid var(--bd)}
+.dl.ghost:hover{background:var(--surface)}
+.dl.soon{opacity:.5;cursor:default;pointer-events:none}
+.dlnote{margin-top:16px;font-size:13px;color:var(--t3)}
+.dlnote a{color:var(--sig)}
+
+/* hero visual */
+.shot{margin:48px auto 0;max-width:840px;background:var(--ink);border-radius:18px;padding:14px;box-shadow:0 30px 60px -30px rgba(20,24,29,.4)}
+.shot .bar{display:flex;gap:7px;padding:6px 8px 12px}
+.shot .bar i{width:11px;height:11px;border-radius:50%;background:#39414C;display:inline-block}
+.shot .screen{background:#0E1116;border-radius:10px;display:grid;grid-template-columns:1.2fr 1fr;gap:1px;overflow:hidden;min-height:300px}
+.shot .pane{padding:22px}
+.shot .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:#6B7480;margin-bottom:14px}
+.shot .drop2{border:1.5px dashed #2A323D;border-radius:12px;padding:30px;text-align:center;color:#AEB6BF}
+.shot .drop2 .ring{color:var(--sig)}
+.shot .vp{background:#15191F;border-radius:12px;height:170px;display:flex;align-items:center;justify-content:center;position:relative}
+.shot .car{width:150px;height:62px;background:#2A3340;border-radius:9px}
+.shot .pill{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:10px;color:#7FD0A6;background:#16241C;border:.5px solid #244A36;border-radius:14px;padding:3px 9px}
+.shot .dim{font-family:var(--mono);font-size:11px;color:#AEB6BF;margin-top:12px;display:flex;justify-content:space-between;border-bottom:.5px solid #232A33;padding:5px 0}
+.shot .dim b{color:#F3F5F7;font-weight:500}
+
+/* sections */
+section{padding:64px 0}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--sig);text-transform:uppercase;margin-bottom:12px}
+h2{font-family:var(--disp);font-weight:600;font-size:clamp(26px,3.4vw,34px);margin:0 0 14px;letter-spacing:-.01em}
+.lead2{color:var(--t2);font-size:17px;max-width:640px;margin:0 0 8px}
+.alt{background:var(--surface)}
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:36px}
+.card{background:var(--surface2);border:.5px solid var(--bd);border-radius:14px;padding:24px}
+.alt .card{background:#fff}
+.card .ic{width:38px;height:38px;border-radius:10px;background:var(--sigbg);color:var(--sig);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px}
+.card h3{font-family:var(--disp);font-weight:500;font-size:18px;margin:0 0 7px}
+.card p{color:var(--t2);font-size:14.5px;margin:0}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:36px;counter-reset:s}
+.step{position:relative;padding:24px;border:.5px solid var(--bd);border-radius:14px;background:#fff}
+.step::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:13px;color:#fff;background:var(--sig);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.step h3{font-family:var(--disp);font-weight:500;font-size:16px;margin:0 0 6px}
+.step p{color:var(--t2);font-size:14px;margin:0}
+
+/* engines */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px}
+@media(max-width:680px){.two{grid-template-columns:1fr}}
+.engine{border:.5px solid var(--bd);border-radius:16px;padding:26px;background:#fff}
+.engine.cloud{border-color:#D9E4F6}
+.engine .tag{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:14px;display:inline-block;margin-bottom:12px}
+.engine .tag.free{background:var(--sigbg);color:var(--sigdk)}
+.engine .tag.byok{background:#F1EFE8;color:#5F5E5A}
+.engine h3{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 8px}
+.engine p{color:var(--t2);font-size:15px;margin:0 0 14px}
+.engine ul{margin:0;padding-left:18px;color:var(--t2);font-size:14px}
+.engine li{margin-bottom:6px}
+
+/* whats new */
+.release{background:#fff;border:.5px solid var(--bd);border-radius:16px;padding:28px;margin-top:30px}
+.release .ver{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.release .ver b{font-family:var(--disp);font-weight:600;font-size:20px}
+.release .ver .date{font-family:var(--mono);font-size:12px;color:var(--t3)}
+.release ul{columns:2;column-gap:34px;margin:0;padding-left:18px;color:var(--t2);font-size:14.5px}
+@media(max-width:680px){.release ul{columns:1}}
+.release li{margin-bottom:8px;break-inside:avoid}
+
+/* fmt */
+.fmtrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.fmt{font-family:var(--mono);font-size:13px;border:.5px solid var(--bd);border-radius:9px;padding:9px 14px;background:#fff;color:var(--tx)}
+
+/* cta */
+.cta{text-align:center;background:var(--ink);color:#fff;border-radius:20px;padding:56px 24px;margin:48px 0}
+.cta h2{color:#fff}
+.cta p{color:#AEB6BF;max-width:520px;margin:0 auto 28px}
+.cta .dl{background:var(--sig)}
+.cta .dl:hover{background:#3E7BEF}
+.cta .dl.ghost{background:transparent;color:#fff;border-color:#39414C}
+
+footer{border-top:.5px solid var(--bd);padding:40px 0;color:var(--t3);font-size:13.5px}
+.foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.foot .wm{font-family:var(--disp);font-weight:600;letter-spacing:.12em;color:var(--ink);font-size:15px}
+.foot a{color:var(--t2)}.foot a:hover{color:var(--sig)}
+.foot .sp{margin-left:auto}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav><div class="nav">
+  <span class="logo">
+    <svg width="22" height="22" viewBox="50 50 140 140" fill="#2D6BE3"><rect x="64" y="64" width="12" height="112" rx="6"/><rect x="64" y="58" width="40" height="12" rx="6"/><rect x="64" y="170" width="40" height="12" rx="6"/><rect x="164" y="64" width="12" height="112" rx="6"/><rect x="136" y="58" width="40" height="12" rx="6"/><rect x="136" y="170" width="40" height="12" rx="6"/><circle cx="120" cy="120" r="14"/></svg>
+    <span class="wm">CALIBER</span>
+  </span>
+  <span class="links">
+    <a href="#how">How it works</a>
+    <a href="#engines">Engines</a>
+    <a href="examples.html">Examples</a>
+    <a href="capture.html">Capture guide</a>
+    <a href="#new">What's new</a>
+    <!-- TODO: replace with your Telegram handle -->
+    <a href="https://t.me/va_rinder" target="_blank" rel="noopener">Contact</a>
+    <!-- TODO: replace with your Ko-fi (or GitHub Sponsors) link -->
+    <a href="https://ko-fi.com/singhvarinder" target="_blank" rel="noopener" style="color:var(--sig);font-weight:500">♥ Support</a>
+    <!-- TODO: replace with your repo URL -->
+    <a class="ghbtn" href="https://github.com/VarinderSS1113/caliber" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </span>
+</div></nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="herobg" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1.3" fill="#2D6BE3" fill-opacity="0.05"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="760" fill="url(#dots)"/>
+    <g stroke="#2D6BE3" fill="none" stroke-width="1.6" stroke-opacity="0.14">
+      <!-- filament spool, top-left -->
+      <g transform="translate(78,96)">
+        <circle r="58"/><circle r="50" stroke-opacity="0.09"/><circle r="42" stroke-opacity="0.09"/><circle r="34" stroke-opacity="0.09"/><circle r="26" stroke-opacity="0.09"/><circle r="15"/>
+      </g>
+      <!-- isometric cube wireframe (primitive) -->
+      <g transform="translate(990,64)">
+        <path d="M0,34 L66,0 L132,34 L66,68 Z"/><path d="M0,34 L0,104 L66,138 L66,68"/><path d="M132,34 L132,104 L66,138"/><path d="M66,68 L66,138"/>
+      </g>
+      <!-- dimension callout (CAD / measurement) -->
+      <g transform="translate(60,432)" stroke-opacity="0.18">
+        <line x1="0" y1="0" x2="190" y2="0"/><path d="M0,-6 L0,6 M190,-6 L190,6"/><path d="M9,-4 L0,0 L9,4 M181,-4 L190,0 L181,4"/>
+      </g>
+      <!-- 3D-print layer lines forming a bottle profile -->
+      <g transform="translate(1040,430)" stroke-opacity="0.16">
+        <path d="M-42,0 H42 M-46,14 H46 M-48,28 H48 M-48,42 H48 M-46,56 H46 M-40,70 H40 M-28,84 H28 M-18,98 H18 M-14,112 H14 M-14,126 H14 M-16,140 H16"/>
+      </g>
+      <!-- gear (mechanical part) -->
+      <g transform="translate(120,628)" stroke-opacity="0.15">
+        <circle r="40"/><circle r="14"/>
+        <line x1="0" y1="-40" x2="0" y2="-52"/><line x1="0" y1="40" x2="0" y2="52"/><line x1="-40" y1="0" x2="-52" y2="0"/><line x1="40" y1="0" x2="52" y2="0"/>
+        <line x1="-28" y1="-28" x2="-37" y2="-37"/><line x1="28" y1="-28" x2="37" y2="-37"/><line x1="-28" y1="28" x2="-37" y2="37"/><line x1="28" y1="28" x2="37" y2="37"/>
+      </g>
+      <!-- printer nozzle laying layers -->
+      <g transform="translate(640,690)" stroke-opacity="0.13">
+        <path d="M-16,-34 H16 L10,-14 H-10 Z"/><path d="M0,-14 V-2"/><path d="M-34,2 H34 M-30,12 H30"/>
+      </g>
+      <!-- filament spool, right edge -->
+      <g transform="translate(1150,300)">
+        <circle r="64"/><circle r="56" stroke-opacity="0.09"/><circle r="48" stroke-opacity="0.09"/><circle r="40" stroke-opacity="0.09"/><circle r="32" stroke-opacity="0.09"/><circle r="17"/>
+      </g>
+      <!-- filament strand running through -->
+      <path d="M118,150 C 330,250 280,372 540,366 S 920,300 1092,300" stroke-opacity="0.15" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M150,118 C 360,210 360,316 600,300 S 980,236 1110,250" stroke-opacity="0.08" stroke-width="2"/>
+    </g>
+    <g fill="#2D6BE3" fill-opacity="0.16" font-family="'JetBrains Mono',monospace" font-size="13">
+      <text x="80" y="422">210 mm</text>
+      <text x="980" y="150">&#216; 50 mm</text>
+    </g>
+  </svg>
+  <div class="wrap">
+  <span class="badge">◆ Free &amp; open-source · local-first</span>
+  <h1>Photos or video in.<br>A <span class="accent">printable</span> 3D model out.</h1>
+  <p class="lead">Caliber turns a phone video or a few photos of a real object into a clean, watertight, correctly-sized 3D model — ready to print or edit. No subscription, nothing leaves your computer.</p>
+  <div class="dlrow" id="download">
+    <!-- TODO: point href at your release download for each OS -->
+    <a class="dl" href="https://github.com/VarinderSS1113/caliber/releases/latest" target="_blank" rel="noopener">
+      <svg width="20" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M16.365 1.43c0 1.14-.49 2.27-1.17 3.08-.74.9-1.99 1.57-2.99 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.57-2.27 1.2-2.98.8-.94 2.15-1.64 3.25-1.68.03.13.05.28.05.43zm4.57 15.71c-.03.07-.47 1.58-1.52 3.12-.95 1.34-1.94 2.71-3.43 2.71-1.52 0-1.9-.88-3.63-.88-1.7 0-2.3.91-3.67.91-1.38 0-2.33-1.26-3.43-2.8C3.96 18.38 2.92 15.57 2.92 12.92c0-4.28 2.8-6.55 5.55-6.55 1.45 0 2.68.95 3.6.95.87 0 2.22-1.01 3.9-1.01.61 0 2.89.06 4.38 2.19-.13.09-2.39 1.37-2.39 4.19 0 3.26 2.86 4.42 2.96 4.45z"/></svg>
+      <span>Download for macOS<small>Apple Silicon · macOS 13+</small></span>
+    </a>
+    <span class="dl soon" aria-disabled="true">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M3 5.1L10.5 4v7.5H3V5.1zM11.5 3.9L21 2.5v9H11.5V3.9zM3 12.5h7.5V20L3 18.9v-6.4zM11.5 12.5H21v9l-9.5-1.4v-7.6z"/></svg>
+      <span>Windows<small>Coming soon</small></span>
+    </span>
+  </div>
+  <p class="dlnote"><a href="#new">See what's included →</a></p>
+
+  <!-- product shot mock -->
+  <div class="shot">
+    <div class="bar"><i></i><i></i><i></i></div>
+    <div class="screen">
+      <div class="pane">
+        <div class="lbl">1 · INPUT</div>
+        <div class="drop2">
+          <div class="ring">
+            <svg width="40" height="40" viewBox="50 50 140 140" fill="currentColor"><rect x="64" y="64" width="12" height="112" rx="6"/><rect x="64" y="58" width="40" height="12" rx="6"/><rect x="64" y="170" width="40" height="12" rx="6"/><rect x="164" y="64" width="12" height="112" rx="6"/><rect x="136" y="58" width="40" height="12" rx="6"/><rect x="136" y="170" width="40" height="12" rx="6"/><circle cx="120" cy="120" r="14"/></svg>
+          </div>
+          <div style="margin-top:8px;font-size:13px">Drop a video, photos, or a 3D file</div>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="lbl">RESULT</div>
+        <div class="vp"><span class="pill">scale ✓ measured</span><div class="car"></div></div>
+        <div class="dim"><span>Width</span><b>210.0 mm</b></div>
+        <div class="dim"><span>Height</span><b>60.2 mm</b></div>
+        <div class="dim" style="border:none"><span>Watertight</span><b style="color:#7FD0A6">yes</b></div>
+      </div>
+    </div>
+  </div>
+</div></header>
+
+<!-- ============ HOW ============ -->
+<section id="how"><div class="wrap">
+  <div class="kicker">How it works</div>
+  <h2>From a real object to a printable file</h2>
+  <p class="lead2">Caliber reconstructs the geometry, cleans it up, scales it to a real measurement, and exports a sliceable model — automatically.</p>
+  <div class="steps">
+    <div class="step"><h3>Capture or import</h3><p>Film a slow orbit, snap a few photos, or drop in an existing .glb / .obj / .stl.</p></div>
+    <div class="step"><h3>Reconstruct</h3><p>It routes your object to the right engine and rebuilds the 3D geometry.</p></div>
+    <div class="step"><h3>Clean &amp; scale</h3><p>Auto de-junk, fill holes, make watertight, and size it to your one measurement.</p></div>
+    <div class="step"><h3>Preview &amp; export</h3><p>Spin it in 3D, then download STL, OBJ, PLY, or 3MF.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ ENGINES ============ -->
+<section id="engines" class="alt"><div class="wrap">
+  <div class="kicker">Two engines, one workflow</div>
+  <h2>The right tool for every object</h2>
+  <p class="lead2">Matte and round objects are measured locally for free. Shiny, dark, or symmetric objects — the ones photogrammetry can't do — use a generative model with your own key.</p>
+  <div class="two">
+    <div class="engine">
+      <span class="tag free">LOCAL · FREE · OFFLINE</span>
+      <h3>Photogrammetry</h3>
+      <p>Apple Object Capture measures real geometry from a video, right on your Mac's GPU.</p>
+      <ul>
+        <li>Best for matte, textured, or round objects</li>
+        <li>Dimensionally honest, captures the true shape</li>
+        <li>Runs entirely on-device — nothing uploaded</li>
+      </ul>
+    </div>
+    <div class="engine cloud">
+      <span class="tag byok">CLOUD · BRING YOUR OWN KEY</span>
+      <h3>Generative</h3>
+      <p>A hosted AI model rebuilds a coherent object from photos — immune to the gloss and symmetry that break photogrammetry.</p>
+      <ul>
+        <li>Best for shiny, dark, metallic, or symmetric objects</li>
+        <li>Multi-view (front/back/left/right + top/bottom) for fidelity</li>
+        <li>You bring your own provider key and pay a few cents per model</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ FEATURES ============ -->
+<section><div class="wrap">
+  <div class="kicker">Built for makers</div>
+  <h2>Accurate, private, and yours</h2>
+  <div class="grid3">
+    <div class="card"><div class="ic">↔</div><h3>Real-world scale</h3><p>Give one measurement and the model comes out exact in millimetres — pin a diameter and height for round parts.</p></div>
+    <div class="card"><div class="ic">◉</div><h3>Watertight &amp; printable</h3><p>Automatic cleanup welds, de-junks, fills holes, and makes every result print-ready.</p></div>
+    <div class="card"><div class="ic">⬡</div><h3>Clean shapes</h3><p>Round objects are rebuilt as crisp surfaces of revolution — no lumpy scans.</p></div>
+    <div class="card"><div class="ic">⤓</div><h3>Edit anywhere</h3><p>Export OBJ and open it in Blender, Fusion, or any CAD tool to refine to your exact spec.</p></div>
+    <div class="card"><div class="ic">🔒</div><h3>Local-first &amp; private</h3><p>Everything runs on your machine. Nothing leaves it unless you choose the cloud engine.</p></div>
+    <div class="card"><div class="ic">&lt;/&gt;</div><h3>Free &amp; open-source</h3><p>No subscription, no lock-in. Read the code, run it from source, make it yours.</p></div>
+  </div>
+  <div class="fmtrow">
+    <span class="fmt">STL</span><span class="fmt">OBJ</span><span class="fmt">PLY</span><span class="fmt">3MF</span>
+    <span class="fmt" style="border-style:dashed;color:var(--t3)">STEP — soon</span>
+  </div>
+</div></section>
+
+<!-- ============ WHAT'S NEW ============ -->
+<section id="new" class="alt"><div class="wrap">
+  <div class="kicker">What's new</div>
+  <h2>Release notes</h2>
+  <div class="release">
+    <div class="ver"><b>Caliber 1.1</b><span class="date">June 2026</span></div>
+    <ul>
+      <li><b>Scan-to-CAD (beta)</b> — detects planes, cylinders, cones/tapers, holes &amp; domes and exports them as <b>editable parts (OBJ)</b> or real <b>STEP B-rep solids</b> you can modify in Fusion/SolidWorks</li>
+      <li><b>STEP &amp; “editable parts” exports</b> added (on top of STL, OBJ, PLY, 3MF)</li>
+      <li><b>Two-point measurement</b> — click two points on the finished model to set exact real-world scale</li>
+      <li><b>Native macOS app</b> — ships as <code>Caliber.app</code> in a drag-to-Applications <code>.dmg</code>, with its own name &amp; icon, no terminal or browser tab</li>
+      <li><b>Mix video + photos</b> for the local engine; feed a <b>video to Cloud</b> and Caliber pulls the sharpest frames automatically</li>
+      <li><b>Smart capture guidance</b> — file-aware engine tips, photo-naming for Cloud (Hunyuan vs TRELLIS), and a full visual <a href="capture.html">capture guide</a></li>
+      <li><b>Friendlier results</b> — native Save dialog, Clear / Start-over, and plain-language errors</li>
+      <li><b>Security pass</b> — per-launch session token, 3D libraries vendored locally (no CDN), pinned build deps, hardened key storage</li>
+      <li>Request-a-feature &amp; bug-report links in the app and site</li>
+    </ul>
+  </div>
+  <div class="release">
+    <div class="ver"><b>Caliber 1.0</b><span class="date">June 2026</span></div>
+    <ul>
+      <li>Local photogrammetry engine (Apple Object Capture)</li>
+      <li>Generative cloud engine with bring-your-own-key</li>
+      <li>Auto engine routing (matte/round → local, shiny/symmetric → cloud)</li>
+      <li>One-measurement real-world scaling (diameter + height pinning)</li>
+      <li>Automatic watertight cleanup &amp; hole-filling</li>
+      <li>Surface-of-revolution rebuild for round objects</li>
+      <li>Live 3D preview &amp; export to STL, OBJ, PLY, 3MF</li>
+      <li>Import &amp; clean existing .glb / .obj / .stl</li>
+      <li>Security-hardened local server (loopback-only, host/origin checks)</li>
+      <li>Full whitepaper &amp; capture/lighting guide included</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ============ CTA ============ -->
+<section><div class="wrap"><div class="cta">
+  <h2>Start with a real object, not a blank viewport.</h2>
+  <p>Download Caliber and turn the thing on your desk into a printable model in minutes.</p>
+  <div class="dlrow">
+    <a class="dl" href="https://github.com/VarinderSS1113/caliber/releases/latest" target="_blank" rel="noopener">Download for macOS</a>
+    <span class="dl ghost soon" aria-disabled="true">Windows — coming soon</span>
+  </div>
+</div></div></section>
+
+<!-- ============ SUPPORT ============ -->
+<section style="padding:0 0 56px"><div class="wrap">
+  <div style="text-align:center;background:var(--surface);border:.5px solid var(--bd);border-radius:16px;padding:40px 24px">
+    <h2 style="margin:0 0 8px">Caliber is free — and stays that way</h2>
+    <p style="color:var(--t2);margin:0 auto 22px;max-width:520px;font-size:15.5px">No ads, no subscription, no servers of ours. If it saves you time, a small donation keeps development going — and you can always reach out directly.</p>
+    <div class="dlrow">
+      <!-- TODO: your Ko-fi / GitHub Sponsors link -->
+      <a class="dl" href="https://ko-fi.com/singhvarinder" target="_blank" rel="noopener" style="background:var(--sig)">♥ Support the project</a>
+      <!-- TODO: your Telegram handle -->
+      <a class="dl ghost" href="https://t.me/va_rinder" target="_blank" rel="noopener">Contact on Telegram</a>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ FOOTER ============ -->
+<footer><div class="wrap"><div class="foot">
+  <svg width="18" height="18" viewBox="50 50 140 140" fill="#2D6BE3"><rect x="64" y="64" width="12" height="112" rx="6"/><rect x="64" y="58" width="40" height="12" rx="6"/><rect x="64" y="170" width="40" height="12" rx="6"/><rect x="164" y="64" width="12" height="112" rx="6"/><rect x="136" y="58" width="40" height="12" rx="6"/><rect x="136" y="170" width="40" height="12" rx="6"/><circle cx="120" cy="120" r="14"/></svg>
+  <span class="wm">CALIBER</span>
+  <span style="color:var(--t3)">Precision, made effortless.</span>
+  <span class="sp"></span>
+  <a href="examples.html">Examples</a>
+  <a href="capture.html">Capture guide</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSde7zEqapYnMvW7v8M67SwK0krQA3UnaRefzA4YcxNhdIJh2Q/viewform?usp=dialog" target="_blank" rel="noopener">Request a feature</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSde7zEqapYnMvW7v8M67SwK0krQA3UnaRefzA4YcxNhdIJh2Q/viewform?usp=dialog" target="_blank" rel="noopener">Report a bug</a>
+  <a href="https://t.me/va_rinder" target="_blank" rel="noopener">Telegram</a>
+  <a href="https://github.com/VarinderSS1113/caliber" target="_blank" rel="noopener">GitHub</a>
+  <a href="https://github.com/VarinderSS1113/caliber/blob/main/docs/WHITEPAPER.md" target="_blank" rel="noopener">Whitepaper</a>
+  <a href="https://github.com/VarinderSS1113/caliber/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+</div></div></footer>
+
+</body>
+</html>

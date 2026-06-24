@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caliber — Examples: real objects, real models</title>
+<meta name="description" content="Real before → after examples from Caliber: physical objects scanned into printable meshes and editable CAD solids.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14181D; --paper:#FFFFFF; --surface:#F7F8FA; --bd:#E6E9ED; --tx:#15191F;
+  --t2:#5A6672; --t3:#8C95A0; --sig:#2D6BE3; --sigdk:#1E4FAF; --sigbg:#EAF1FC; --ok:#2F8F5B;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --disp:'Space Grotesk',sans-serif; --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--tx);background:var(--paper);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:.5px solid var(--bd)}
+.nav{display:flex;align-items:center;gap:14px;padding:14px 24px;max-width:1040px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:9px}
+.logo .wm{font-family:var(--disp);font-weight:600;letter-spacing:.13em;font-size:17px;color:var(--ink)}
+.nav .links{margin-left:auto;display:flex;gap:24px;align-items:center;font-size:14.5px;color:var(--t2)}
+.nav .links a:hover{color:var(--tx)}
+.back{display:inline-flex;align-items:center;gap:6px;border:.5px solid var(--bd);border-radius:9px;padding:8px 13px;font-size:14px;color:var(--tx)}
+.back:hover{border-color:var(--sig);color:var(--sig)}
+
+.head{padding:70px 0 26px;text-align:center}
+.kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
+h1{font-family:var(--disp);font-weight:600;font-size:clamp(30px,5vw,46px);letter-spacing:-.01em;margin:14px 0 12px}
+.sub{font-size:18px;color:var(--t2);max-width:640px;margin:0 auto}
+
+.ex{border-top:.5px solid var(--bd);padding:34px 0;display:grid;grid-template-columns:1fr;gap:18px}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
+@media(max-width:620px){.pair{grid-template-columns:1fr;gap:10px}.arrow{transform:rotate(90deg);justify-self:center}}
+figure{margin:0}
+.imbox{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--surface);border:.5px solid var(--bd)}
+.imbox.dark{background:#0E1116}
+.imbox .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:13px;font-family:var(--mono)}
+.imbox img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block}
+figcaption{margin-top:8px;font-size:13px;color:var(--t3);text-align:center;font-family:var(--mono);letter-spacing:.03em}
+.arrow{font-size:26px;color:var(--sig);font-weight:600}
+.meta h3{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 6px}
+.meta p{margin:0 0 12px;color:var(--t2);max-width:760px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:4px 11px;border-radius:20px;background:var(--sigbg);color:var(--sigdk)}
+.tag.free{background:#E7F3EC;color:var(--ok)}
+.tag.muted{background:var(--surface);color:var(--t3);border:.5px solid var(--bd)}
+
+.appshow{padding:6px 0 10px}
+.shtitle{font-family:var(--disp);font-weight:600;font-size:24px;margin:0 0 4px;text-align:center}
+.shsub{color:var(--t2);max-width:660px;margin:0 auto 22px;text-align:center}
+.window{border:.5px solid var(--bd);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(20,24,29,.13);background:#fff}
+.titlebar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:var(--surface);border-bottom:.5px solid var(--bd)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot.r{background:#FF5F57}.dot.y{background:#FEBC2E}.dot.g{background:#28C840}
+.titlebar .wt{margin-left:8px;font-family:var(--disp);font-weight:500;letter-spacing:.1em;font-size:12px;color:var(--t2)}
+.shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd)}
+@media(max-width:620px){.shotgrid{grid-template-columns:1fr}}
+.shot{position:relative;aspect-ratio:4/3;background:var(--surface)}
+.shot.solo{aspect-ratio:16/9.5;grid-column:1 / -1}
+.shot .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--t3);font-family:var(--mono);font-size:13px}
+.shot img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block}
+.shotcap{text-align:center;font-size:13px;color:var(--t3);font-family:var(--mono);margin-top:10px}
+.note{background:var(--sigbg);border:.5px solid #CFE0FA;border-radius:14px;padding:16px 18px;margin:26px 0;font-size:14.5px;color:var(--sigdk)}
+.cta{margin:30px 0 10px;background:var(--ink);color:#fff;border-radius:18px;padding:30px;text-align:center}
+.cta a{display:inline-block;background:var(--sig);color:#fff;border-radius:11px;padding:12px 22px;font-weight:500;margin-top:12px}
+.cta a:hover{background:#3B78F0}
+
+footer{border-top:.5px solid var(--bd);padding:36px 0;color:var(--t3);font-size:13.5px}
+.foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.foot .wm{font-family:var(--disp);font-weight:600;letter-spacing:.13em;font-size:15px;color:var(--ink)}
+.foot .sp{flex:1}
+.foot a:hover{color:var(--tx)}
+</style>
+</head>
+<body>
+
+<nav><div class="nav">
+  <a class="logo" href="index.html">
+    <svg width="22" height="22" viewBox="50 50 140 140" fill="#2D6BE3"><rect x="64" y="64" width="12" height="112" rx="6"/><rect x="64" y="58" width="40" height="12" rx="6"/><rect x="64" y="170" width="40" height="12" rx="6"/><rect x="164" y="64" width="12" height="112" rx="6"/><rect x="136" y="58" width="40" height="12" rx="6"/><rect x="136" y="170" width="40" height="12" rx="6"/><circle cx="120" cy="120" r="14"/></svg>
+    <span class="wm">CALIBER</span>
+  </a>
+  <span class="links">
+    <a href="capture.html">Capture guide</a>
+    <a class="back" href="index.html">← Back to home</a>
+  </span>
+</div></nav>
+
+<div class="wrap">
+
+  <div class="head">
+    <div class="kick">Examples</div>
+    <h1>Real objects, real models</h1>
+    <p class="sub">Actual scans, nothing staged. Photos and video in; printable meshes and editable CAD solids out — including the honest cases where a freeform shape stays a mesh.</p>
+  </div>
+
+  <!-- APP / UI SHOWCASE -->
+  <section class="appshow">
+    <h2 class="shtitle">The app</h2>
+    <p class="shsub">Drag in a video or photos, pick an engine, and get a printable model — with a live 3D preview, two-point scaling, and one-click export to STL / OBJ / STEP. Runs entirely on your Mac, no account.</p>
+    <div class="window">
+      <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="wt">CALIBER</span></div>
+      <div class="shotgrid">
+        <div class="shot"><span class="ph">app-import.png</span><img src="assets/examples/app-import.png" alt="Caliber — import &amp; engine panel" onerror="this.remove()"></div>
+        <div class="shot"><span class="ph">app-result.png</span><img src="assets/examples/app-result.png" alt="Caliber — 3D preview &amp; export panel" onerror="this.remove()"></div>
+      </div>
+    </div>
+    <p class="shotcap">left: drop files &amp; choose an engine · right: preview, measure, and export</p>
+  </section>
+
+  <!-- TAILLIGHT -->
+  <article class="ex">
+    <div class="pair">
+      <figure>
+        <div class="imbox"><span class="ph">taillight-photo.jpg</span><img src="assets/examples/taillight-photo.jpg" alt="Real tail-light housing" onerror="this.remove()"></div>
+        <figcaption>the real part</figcaption>
+      </figure>
+      <div class="arrow">→</div>
+      <figure>
+        <div class="imbox dark"><span class="ph">taillight-model.png</span><img src="assets/examples/taillight-model.png" alt="Tail-light reconstructed mesh" onerror="this.remove()"></div>
+        <figcaption>Caliber model</figcaption>
+      </figure>
+    </div>
+    <div class="meta">
+      <h3>Car tail-light housing</h3>
+      <p>A discontinued plastic housing scanned into a clean, detailed mesh — mounting bosses, ribs, and the contoured body all intact. It's a freeform part, so the model is an accurate reference mesh you rebuild the repair on.</p>
+      <div class="tags"><span class="tag free">Local engine</span><span class="tag">Mesh</span><span class="tag muted">Freeform → reference</span></div>
+    </div>
+  </article>
+
+  <!-- BOTTLE -->
+  <article class="ex">
+    <div class="pair">
+      <figure>
+        <div class="imbox"><span class="ph">bottle-photo.jpg</span><img src="assets/examples/bottle-photo.jpg" alt="Real supplement bottle" onerror="this.remove()"></div>
+        <figcaption>the real part</figcaption>
+      </figure>
+      <div class="arrow">→</div>
+      <figure>
+        <div class="imbox"><span class="ph">bottle-model.png</span><img src="assets/examples/bottle-model.png" alt="STEP cylinder in Fusion" onerror="this.remove()"></div>
+        <figcaption>Caliber model</figcaption>
+      </figure>
+    </div>
+    <div class="meta">
+      <h3>Supplement bottle → editable CAD</h3>
+      <p>A primitive-shaped object, so Caliber goes all the way to CAD: the body comes out as a true <b>STEP cylinder solid</b> you can open in Fusion and edit — change the diameter or height, no mesh wrangling.</p>
+      <div class="tags"><span class="tag">Cloud / Local</span><span class="tag">STEP solid</span><span class="tag muted">Primitive → editable</span></div>
+    </div>
+  </article>
+
+  <!-- PORSCHE -->
+  <article class="ex">
+    <div class="pair">
+      <figure>
+        <div class="imbox"><span class="ph">porsche-photo.jpg</span><img src="assets/examples/porsche-photo.jpg" alt="Die-cast Porsche" onerror="this.remove()"></div>
+        <figcaption>the real object</figcaption>
+      </figure>
+      <div class="arrow">→</div>
+      <figure>
+        <div class="imbox"><span class="ph">porsche-model.png</span><img src="assets/examples/porsche-model.png" alt="Reconstructed Porsche mesh" onerror="this.remove()"></div>
+        <figcaption>Caliber model</figcaption>
+      </figure>
+    </div>
+    <div class="meta">
+      <h3>Die-cast Porsche 911</h3>
+      <p>A glossy, symmetric model car — the classic case photogrammetry can't touch. The Cloud engine recognises it and rebuilds the whole shape: body, wheels, spoiler, mirrors. A printable mesh and a strong first draft.</p>
+      <div class="tags"><span class="tag">Cloud engine</span><span class="tag">Mesh</span><span class="tag muted">Shiny / symmetric</span></div>
+    </div>
+  </article>
+
+  <div class="note">Two output types, both honest: <b>primitive-shaped parts</b> become editable CAD solids; <b>freeform / organic shapes</b> become accurate meshes you print or rebuild on. Caliber tells you which you're getting.</div>
+
+  <div class="cta">
+    <div style="font-family:var(--disp);font-weight:600;font-size:22px">Try it on your own thing.</div>
+    <p style="color:#AEB6BF;margin:8px 0 0">Free, open-source, runs on your Mac.</p>
+    <a href="index.html#download">Download Caliber</a>
+  </div>
+
+</div>
+
+<footer><div class="wrap"><div class="foot">
+  <svg width="18" height="18" viewBox="50 50 140 140" fill="#2D6BE3"><rect x="64" y="64" width="12" height="112" rx="6"/><rect x="64" y="58" width="40" height="12" rx="6"/><rect x="64" y="170" width="40" height="12" rx="6"/><rect x="164" y="64" width="12" height="112" rx="6"/><rect x="136" y="58" width="40" height="12" rx="6"/><rect x="136" y="170" width="40" height="12" rx="6"/><circle cx="120" cy="120" r="14"/></svg>
+  <span class="wm">CALIBER</span>
+  <span class="sp"></span>
+  <a href="index.html">Home</a>
+  <a href="capture.html">Capture guide</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSde7zEqapYnMvW7v8M67SwK0krQA3UnaRefzA4YcxNhdIJh2Q/viewform?usp=dialog" target="_blank" rel="noopener">Request a feature</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSde7zEqapYnMvW7v8M67SwK0krQA3UnaRefzA4YcxNhdIJh2Q/viewform?usp=dialog" target="_blank" rel="noopener">Report a bug</a>
+</div></div></footer>
+
+</body>
+</html>

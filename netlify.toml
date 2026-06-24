@@ -1,0 +1,3 @@
+# Netlify deploy config — serves the landing page from the docs/ folder.
+[build]
+  publish = "docs"
