@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/caliber-icon.png" width="96" alt="Caliber">
+  <img src="assets/caliber-icon-blue.png" width="96" alt="Caliber">
 </p>
 
 <h1 align="center">Caliber</h1>
