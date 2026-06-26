@@ -82,14 +82,7 @@ built in, so there's nothing else to install.
 > 4. Confirm with **Open Anyway** (and Touch ID / password). Caliber launches and macOS
 >    remembers it — you won't be asked again.
 >
-> (A signed + notarised build will skip all of this — see [`docs/BUILD.md`](docs/BUILD.md).)
-> Windows app: coming soon.
-
-**Build the installer (publisher).** A Mac app must be compiled on a Mac. Double-click
-**`Build Caliber.dmg.command`** once on macOS (Python 3 required; Xcode only if you want
-the free local engine included) and it produces `Caliber.dmg`. Full details, plus signing
-and notarisation, are in [`docs/BUILD.md`](docs/BUILD.md).
-
+> 
 **Run from source (developers).** The app is a thin native window over a loopback-only
 server, so you can also run it directly:
 
